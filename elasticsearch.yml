@@ -83,4 +83,4 @@ spec:
                   cpu: "2"
 
 
-# default pod/cluster-elk-es-master-nodes-2
+#default          pod/cluster-elk-es-master-nodes-0
