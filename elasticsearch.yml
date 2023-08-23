@@ -3,13 +3,12 @@ kind: Elasticsearch
 metadata:
   name: cluster-elk
 spec:
-  version: 8.9.0
+  version: 8.9.1
   nodeSets:
   - name: master-nodes
     count: 3
     config:
-        node.master: true
-        node.data: false
+        node.roles: ["master"]
     volumeClaimTemplates:
       - metadata:
           name: elasticsearch-data
@@ -33,9 +32,7 @@ spec:
   - name: data-nodes
     count: 4
     config:
-        node.master: false
-        node.data: true
-        node.role: "data_hot"
+        node.roles: ["data"]
     volumeClaimTemplates:
       - metadata:
           name: elasticsearch-data
@@ -48,9 +45,7 @@ spec:
   - name: data-frozen
     count: 1
     config:
-        node.master: false
-        node.data: true
-        node.role: "data_frozen"
+        node.roles: ["data"]
     podTemplate:
         spec:
           containers:
@@ -65,9 +60,7 @@ spec:
   - name: data-ml
     count: 2
     config:
-        node.master: false
-        node.data: true
-        node.role: "data_ml"
+        node.roles: ["data"]
     volumeClaimTemplates:
       - metadata:
           name: elasticsearch-data
@@ -88,3 +81,6 @@ spec:
                 limits:
                   memory: "4Gi"
                   cpu: "2"
+
+
+# default pod/cluster-elk-es-master-nodes-2
