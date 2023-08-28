@@ -1,7 +1,7 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: cluster-elk
+  name: cluster-elk-bv
 spec:
   version: 8.9.1
   nodeSets:
@@ -30,9 +30,10 @@ spec:
                   memory: "4Gi"
                   cpu: "2" 
   - name: data-nodes
-    count: 4
+    count: 3
     config:
-        node.roles: ["data"]
+        node.roles: ["data_hot","ingest","transform"]
+        node.attr.data: hot
     volumeClaimTemplates:
       - metadata:
           name: elasticsearch-data
@@ -41,26 +42,23 @@ spec:
           storageClassName: "standard"
           resources:
             requests:
-              storage: 10Gi   # Tamanho do disco solicitado por pod          
+              storage: 5Gi   # Tamanho do disco solicitado por pod   
+    podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+              resources:
+                requests:
+                  memory: "2Gi"
+                  cpu: "1"
+                limits:
+                  memory: "4Gi"
+                  cpu: "2"        
   - name: data-frozen
     count: 1
     config:
-        node.roles: ["data"]
-    podTemplate:
-        spec:
-          containers:
-            - name: elasticsearch
-              resources:
-                requests:
-                  memory: "2Gi"
-                  cpu: "1"
-                limits:
-                  memory: "4Gi"
-                  cpu: "2"
-  - name: data-ml
-    count: 2
-    config:
-        node.roles: ["data"]
+        node.roles: ["data_frozen"]
+        node.attr.data: frozen
     volumeClaimTemplates:
       - metadata:
           name: elasticsearch-data
@@ -69,7 +67,32 @@ spec:
           storageClassName: "standard"
           resources:
             requests:
-              storage: 10Gi   # Tamanho do disco solicitado por pod  
+              storage: 5Gi   # Tamanho do disco solicitado por pod         
+    podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+              resources:
+                requests:
+                  memory: "2Gi"
+                  cpu: "1"
+                limits:
+                  memory: "4Gi"
+                  cpu: "2"
+  - name: ml
+    count: 1
+    config:
+        node.roles: [ ml, remote_cluster_client]
+        node.attr.data: ml
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "standard"
+          resources:
+            requests:
+              storage: 5Gi   # Tamanho do disco solicitado por pod  
     podTemplate:
         spec:
           containers:
@@ -82,5 +105,3 @@ spec:
                   memory: "4Gi"
                   cpu: "2"
 
-
-#default          pod/cluster-elk-es-master-nodes-0
