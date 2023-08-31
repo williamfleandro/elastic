@@ -17,23 +17,23 @@ spec:
           storageClassName: "standard"
           resources:
             requests:
-              storage: 10Gi   # Tamanho do disco solicitado por pod  
+              storage: 20Gi   # Tamanho do disco solicitado por pod  
     podTemplate:
         spec:
           containers:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "2Gi"
-                  cpu: "1"
-                limits:
                   memory: "4Gi"
-                  cpu: "2" 
+                  cpu: "2"
+                limits:
+                  memory: "8Gi"
+                  cpu: "4" 
   - name: data-nodes
     count: 3
     config:
-        node.roles: ["data_hot","ingest","transform"]
-        node.attr.data: hot
+        node.roles: ["data","ingest","transform","data_content"]
+        #node.attr.data: hot
     volumeClaimTemplates:
       - metadata:
           name: elasticsearch-data
@@ -42,66 +42,66 @@ spec:
           storageClassName: "standard"
           resources:
             requests:
-              storage: 5Gi   # Tamanho do disco solicitado por pod   
+              storage: 20Gi   # Tamanho do disco solicitado por pod   
     podTemplate:
         spec:
           containers:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "2Gi"
-                  cpu: "1"
-                limits:
-                  memory: "4Gi"
-                  cpu: "2"        
-  - name: data-frozen
-    count: 1
-    config:
-        node.roles: ["data_frozen"]
-        node.attr.data: frozen
-    volumeClaimTemplates:
-      - metadata:
-          name: elasticsearch-data
-        spec:
-          accessModes: [ "ReadWriteOnce" ]
-          storageClassName: "standard"
-          resources:
-            requests:
-              storage: 5Gi   # Tamanho do disco solicitado por pod         
-    podTemplate:
-        spec:
-          containers:
-            - name: elasticsearch
-              resources:
-                requests:
-                  memory: "2Gi"
-                  cpu: "1"
-                limits:
                   memory: "4Gi"
                   cpu: "2"
-  - name: ml
-    count: 1
-    config:
-        node.roles: [ ml, remote_cluster_client]
-        node.attr.data: ml
-    volumeClaimTemplates:
-      - metadata:
-          name: elasticsearch-data
-        spec:
-          accessModes: [ "ReadWriteOnce" ]
-          storageClassName: "standard"
-          resources:
-            requests:
-              storage: 5Gi   # Tamanho do disco solicitado por pod  
-    podTemplate:
-        spec:
-          containers:
-            - name: elasticsearch
-              resources:
-                requests:
-                  memory: "2Gi"
-                  cpu: "1"
                 limits:
-                  memory: "4Gi"
-                  cpu: "2"
+                  memory: "8Gi"
+                  cpu: "4"        
+#  - name: data-frozen
+#    count: 2
+#    config:
+#        node.roles: ["data_frozen"]
+#        node.attr.data: frozen
+#    volumeClaimTemplates:
+#      - metadata:
+#          name: elasticsearch-data
+#        spec:
+#          accessModes: [ "ReadWriteOnce" ]
+#          storageClassName: "standard"
+#          resources:
+#            requests:
+#              storage: 50Gi   # Tamanho do disco solicitado por pod         
+#    podTemplate:
+#        spec:
+#          containers:
+#            - name: elasticsearch
+#              resources:
+#                requests:
+#                  memory: "4Gi"
+#                  cpu: "2"
+#                limits:
+#                  memory: "8Gi"
+#                  cpu: "4"
+# - name: ml
+#    count: 1
+#    config:
+#        node.roles: [ ml, remote_cluster_client]
+#        node.attr.data: ml
+#    volumeClaimTemplates:
+#      - metadata:
+#          name: elasticsearch-data
+#        spec:
+#          accessModes: [ "ReadWriteOnce" ]
+#          storageClassName: "standard"
+#          resources:
+#            requests:
+#              storage: 20Gi   # Tamanho do disco solicitado por pod  
+#    podTemplate:
+#        spec:
+#          containers:
+#            - name: elasticsearch
+#              resources:
+#                requests:
+#                  memory: "4Gi"
+#                  cpu: "2"
+#                limits:
+#                  memory: "8Gi"
+#                  cpu: "4"
 
