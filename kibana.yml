@@ -1,12 +1,12 @@
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-  name: kibana
+  name: cluster-elk-bv
 spec:
   version: 8.9.1
-  count: 3
+  count: 1
   elasticsearchRef:
-    name: cluster-elk
+    name: cluster-elk-bv
     namespace: default
   config:
     server.name: "kibana"
@@ -25,3 +25,4 @@ spec:
             limits:
               memory: "4Gi"
               cpu: "2"
+
